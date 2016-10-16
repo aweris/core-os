@@ -1,0 +1,30 @@
+#!/bin/bash
+#
+# Waits for all machines to have joined cluster
+# then starts Weave router on leader, and passes leader
+# ip address to all other Weave launches.
+#
+# Usage: weave_startup.sh [clusterSize]
+#
+clusterSize=$1
+
+while true; do 
+  numInCluster=$(fleetctl list-machines --no-legend | wc -l | tr -d '[[:space:]]')
+  if [ $numInCluster = $clusterSize ]; then
+    leaderId=$(etcdctl get /_coreos.com/fleet/lease/engine-leader | pcregrep -o1 '\"MachineID\":\"(.*)\",')
+    leaderIp=$(fleetctl list-machines --full | grep "$leaderId" | cut -f 2)
+    selfId=$(curl -Ls http://127.0.0.1:4001/v2/stats/self | pcregrep -o1 '\"name\":\"([^\"]*)\",')
+    echo "Leader: $leaderId, Self: $selfId"
+    if [ "$selfId" = "$leaderId" ]; then
+      echo "Starting weave router"
+      /opt/bin/weave launch
+    else
+      echo "Connecting to weave peer $leaderIp"
+      /opt/bin/weave launch $leaderIp
+    fi
+    break
+  else
+    echo "$numInCluster of $clusterSize machines connected. Waiting..."
+  fi;
+  sleep 5;
+done
