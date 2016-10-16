@@ -26,11 +26,11 @@ EnvironmentFile=/etc/environment
 ## Directives with "=-" are allowed to fail without consequence
 ExecStartPre=-/usr/bin/docker kill redis.1
 ExecStartPre=-/usr/bin/docker rm redis.1
-ExecStartPre=/usr/bin/docker pull redis:alpine
+ExecStartPre=/usr/bin/docker pull redis
 ExecStart=/opt/bin/weave run -p 6379:6379 \
                             -v /data/redis:/data \
-                            -v /etc/redis/redis-master.conf:/etc/redis/redis.conf \
-                            --name redis.1 redis:alpine redis-server /etc/redis/redis.conf
+                            -v /opt/config/redis/redis-master.conf:/etc/redis/redis.conf \
+                            --name redis.1 redis redis-server /etc/redis/redis.conf
 
 # Stop
 ExecStop=/usr/bin/docker stop redis.1
