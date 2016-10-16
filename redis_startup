@@ -24,4 +24,15 @@ then
     done
 fi
 
-fleetctl start /opt/services/instances/redis@*.service
+fleetctl start /opt/services/instances/redis@1.service
+
+sleep 5
+
+if [ $clusterSize -gt 1 ]
+then
+   for i in $(seq 2 $clusterSize)
+    do
+       fleetctl start /opt/services/instances/redis@$i.service
+    done
+fi
+
