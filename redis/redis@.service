@@ -29,7 +29,7 @@ ExecStartPre=-/usr/bin/docker rm redis.%i
 ExecStartPre=/usr/bin/docker pull redis:aphine
 ExecStart=/opt/bin/weave run -p 6379:6379 \
                             -v /data/redis:/data \
-                            -v /etc/redis/redis-slave.conf:/etc/redis/redis.conf \
+                            -v /etc/redis/redis.conf:/etc/redis/redis.conf \
                             --name redis.%i redis:alpine redis-server /etc/redis/redis.conf
                             
 # Stop

@@ -10,19 +10,24 @@ password=$2
 
 echo 'requirepass ' $password >> /etc/redis/redis-master.conf
 
-/usr/bin/wget -N -P /etc/redis/ https://raw.githubusercontent.com/aweris/core-os/master/redis/conf/redis.conf
+/usr/bin/wget -N -P /etc/redis/ https://raw.githubusercontent.com/aweris/core-os/master/redis/conf/redis-slave.conf
 
-echo 'requirepass ' $password >> /etc/redis/redis-master.conf
-echo 'masterauth ' $password >> /etc/redis/redis-master.conf
+echo 'requirepass ' $password >> /etc/redis/redis-slave.conf
+echo 'masterauth ' $password >> /etc/redis/redis-slave.conf
 
 mkdir -p /opt/services/templates
 mkdir -p /opt/services/instances
 
+/usr/bin/wget -N -P /opt/services/instances https://raw.githubusercontent.com/aweris/core-os/master/redis/redis@1.service
+
 /usr/bin/wget -N -P /opt/services/templates https://raw.githubusercontent.com/aweris/core-os/master/redis/redis@.service
 
-for $clusterSize in 2 .. N
-do
-	command1
-	command2
-	commandN
-done
+if [ $clusterSize -gt 1 ]
+then
+    for i in {2..$clusterSize}
+    do
+       ln -s /opt/services/templates/redis@.service /opt/services/instances/redis@$i.service
+    done
+fi
+
+fleetctl start /opt/services/instances/redis@{1..$clusterSize}.service
