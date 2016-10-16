@@ -26,7 +26,8 @@ if [ $clusterSize -gt 1 ]
 then
     for i in {2..$clusterSize}
     do
-       ln -s /opt/services/templates/redis@.service /opt/services/instances/redis@$i.service
+       instance='/opt/services/instances/redis@'$i'.service'
+       ln -s /opt/services/templates/redis@.service $instance
     done
 fi
 
