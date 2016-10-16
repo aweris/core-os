@@ -29,7 +29,6 @@ ExecStartPre=-/usr/bin/docker rm redis.1
 ExecStartPre=/usr/bin/docker pull redis
 ExecStart=/opt/bin/weave run -p 6379:6379 \
                             -v /data/redis:/data \
-                            -v /opt/config/redis/redis-master.conf:/etc/redis/redis.conf \
                             --name redis.1 redis redis-server /etc/redis/redis.conf
 
 # Stop

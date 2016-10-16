@@ -8,17 +8,6 @@ password=$2
 
 echo "Creating Redis Cluster with $clusterSize nodes"
 
-/usr/bin/wget -N -P /opt/config/redis/ https://raw.githubusercontent.com/aweris/core-os/master/redis/conf/redis-master.conf
-
-echo -e '\n' >> /opt/config/redis/redis-master.conf
-echo -e 'requirepass ' $password >>/opt/config/redis/redis-master.conf
-
-/usr/bin/wget -N -P /opt/config/redis/ https://raw.githubusercontent.com/aweris/core-os/master/redis/conf/redis-slave.conf
-
-echo -e '\n' >> /opt/config/redis/redis-slave.conf
-echo -e 'requirepass ' $password >> /opt/config/redis/redis-slave.conf
-echo -e 'masterauth ' $password >> /opt/config/redis/redis-slave.conf
-
 mkdir -p /opt/services/templates
 mkdir -p /opt/services/instances
 
