@@ -1,0 +1,28 @@
+#!/bin/bash
+#
+# Creates Rest cluster with 1 master N slave config
+# Usage: redis_startup [clusterSize] [password]
+
+clusterSize=$1
+password=$2
+
+/usr/bin/wget -N -P /etc/redis/ https://raw.githubusercontent.com/aweris/core-os/master/redis/conf/redis-master.conf
+
+echo 'requirepass ' $password >> /etc/redis/redis-master.conf
+
+/usr/bin/wget -N -P /etc/redis/ https://raw.githubusercontent.com/aweris/core-os/master/redis/conf/redis.conf
+
+echo 'requirepass ' $password >> /etc/redis/redis-master.conf
+echo 'masterauth ' $password >> /etc/redis/redis-master.conf
+
+mkdir -p /opt/services/templates
+mkdir -p /opt/services/instances
+
+/usr/bin/wget -N -P /opt/services/templates https://raw.githubusercontent.com/aweris/core-os/master/redis/redis@.service
+
+for $clusterSize in 2 .. N
+do
+	command1
+	command2
+	commandN
+done
