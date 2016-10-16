@@ -13,9 +13,9 @@ while true; do
   if [ $numInCluster = $clusterSize ]; then
     leaderId=$(etcdctl get /_coreos.com/fleet/lease/engine-leader | pcregrep -o1 '\"MachineID\":\"(.*)\",')
     leaderIp=$(fleetctl list-machines --full | grep "$leaderId" | cut -f 2)
-    selfId=$(curl -Ls http://127.0.0.1:4001/v2/stats/self | pcregrep -o1 '\"name\":\"([^\"]*)\",')
+    selfPubIp=$(COREOS_PUBLIC_IPV4)
     echo "Leader: $leaderId, Self: $selfId"
-    if [ "$selfId" = "$leaderId" ]; then
+    if [ "$selfPubIp" = "$leaderIp" ]; then
       echo "Starting weave router"
       /opt/bin/weave launch
     else
