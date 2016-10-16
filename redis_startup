@@ -28,10 +28,11 @@ if [ $clusterSize -gt 1 ]
 then
    for i in $(seq 2 $clusterSize)
     do
+       echo $i
        instance='/opt/services/instances/redis@'$i'.service'
        ln -s /opt/services/templates/redis@.service $instance
        echo $instance ' created'
     done
 fi
 
-fleetctl start /opt/services/instances/redis@{1..$clusterSize}.service
+fleetctl start /opt/services/instances/redis@*.service
