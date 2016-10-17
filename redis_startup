@@ -25,5 +25,3 @@ then
 fi
 
 fleetctl start /opt/services/instances/redis@*.service
-
-sleep 5
