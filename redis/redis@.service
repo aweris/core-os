@@ -1,15 +1,17 @@
 [Unit]
-Description=Redis service instance %i
+Description=Redis service instance %i (slave)
 
 # Requirements
 Requires=etcd2.service
 Requires=docker.service
 Requires=weave.service
+Requires=redis@1.service
 
 # Dependency ordering
 After=etcd2.service
 After=docker.service
 After=weave.service
+After=redis@1.service
 
 [Service]
 # Let processes take awhile to start up (for first run Docker containers)
@@ -27,15 +29,13 @@ EnvironmentFile=/etc/environment
 ExecStartPre=-/usr/bin/docker kill redis.%i
 ExecStartPre=-/usr/bin/docker rm redis.%i
 ExecStartPre=/usr/bin/docker pull redis:alpine
-ExecStart=/opt/bin/weave run -p 6379:6379 \
-                            -v /data/redis:/data \
-                            --name redis.%i redis:alpine redis-server --slaveof redis.1.weave.local 6379
+ExecStart=/opt/bin/weave run -p 6379:6379 -v /data/redis:/data --name redis.%i redis:alpine redis-server --slaveof redis.1.weave.local 6379
                             
 # Stop
 ExecStop=/usr/bin/docker stop redis.%i
 
 [X-Fleet]
-# RUnning on worker machines only
+# Running on worker machines only
 MachineMetadata=role=data-store
 # Don't schedule on the same machine as other Apache instances
 Conflicts=redis@*.service

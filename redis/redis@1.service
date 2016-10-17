@@ -27,15 +27,13 @@ EnvironmentFile=/etc/environment
 ExecStartPre=-/usr/bin/docker kill redis.1
 ExecStartPre=-/usr/bin/docker rm redis.1
 ExecStartPre=/usr/bin/docker pull redis:alpine
-ExecStart=/opt/bin/weave run -p 6379:6379 \
-                            -v /data/redis:/data \
-                            --name redis.1 redis:alpine redis-server
+ExecStart=/opt/bin/weave run -p 6379:6379 -v /data/redis:/data --name redis.1 redis:alpine redis-server
 
 # Stop
 ExecStop=/usr/bin/docker stop redis.1
 
 [X-Fleet]
-# RUnning on worker machines only
+# Running on worker machines only
 MachineMetadata=role=data-store
 # Don't schedule on the same machine as other Apache instances
 Conflicts=redis@*.service
