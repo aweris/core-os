@@ -2,15 +2,7 @@
 #
 dockerPort=$1
 
-leaderId=$(etcdctl get /_coreos.com/fleet/lease/engine-leader | pcregrep -o1 '\"MachineID\":\"(.*)\",')
-leaderIp=$(fleetctl list-machines --full | grep "$leaderId" | cut -f 2)
-selfPubIp=$(COREOS_PUBLIC_IPV4)
-
-echo "Leader: $leaderIp($leaderId), Self: $selfPubIp"
-
 /usr/bin/docker run -d --name swarm-manager --net=host swarm:latest manage etcd://127.0.0.1:2379
-/usr/bin/docker run -d --name swarm-agent --net=host swarm:latest join --addr=$leaderIp:$1 etcd://127.0.0.1:2379
+/usr/bin/docker run -d --name swarm-agent --net=host swarm:latest join --addr=$(COREOS_PUBLIC_IPV4):$1 etcd://127.0.0.1:2379
 
 docker -H :4000 info
- 
-echo "Connecting to swarm peer $leaderIp"
