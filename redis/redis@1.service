@@ -28,7 +28,7 @@ ExecStartPre=-/usr/bin/docker kill redis.1
 ExecStartPre=-/usr/bin/docker rm redis.1
 ExecStartPre=/usr/bin/docker pull redis:alpine
 ExecStartPre=/opt/bin/weave run --net=ibe-development -p 6379:6379 -v /data/redis:/data --name redis.1 redis:alpine redis-server
-ExecStart=usr/bin/docker attach redis.1
+ExecStart=/usr/bin/docker attach redis.1
 
 # Stop
 ExecStop=/usr/bin/docker stop redis.1
