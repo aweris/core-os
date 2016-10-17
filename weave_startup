@@ -17,10 +17,10 @@ while true; do
     echo "Leader: $leaderId, Self: $selfId"
     if [ "$selfPubIp" = "$leaderIp" ]; then
       echo "Starting weave router"
-      /opt/bin/weave launch
+      /opt/bin/weave launch  --no-restart
     else
       echo "Connecting to weave peer $leaderIp"
-      /opt/bin/weave launch $leaderIp
+      /opt/bin/weave launch  --no-restart $leaderIp
     fi
     break
   else
