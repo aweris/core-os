@@ -29,7 +29,8 @@ EnvironmentFile=/etc/environment
 ExecStartPre=-/usr/bin/docker kill redis.%i
 ExecStartPre=-/usr/bin/docker rm redis.%i
 ExecStartPre=/usr/bin/docker pull redis:alpine
-ExecStart=/opt/bin/weave run -p 6379:6379 -v /data/redis:/data --name redis.%i redis:alpine redis-server --slaveof redis.1.weave.local 6379
+ExecStartPre=/opt/bin/weave run --net=ibe-development -p 6379:6379 -v /data/redis:/data --name redis.%i redis:alpine redis-server --slaveof redis.1.weave.local 6379
+ExecStart=usr/bin/docker attach redis.%i
                             
 # Stop
 ExecStop=/usr/bin/docker stop redis.%i

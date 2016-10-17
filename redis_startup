@@ -1,10 +1,9 @@
 #!/bin/bash
 #
 # Creates Rest cluster with 1 master N slave config
-# Usage: redis_startup [clusterSize] [password]
+# Usage: redis_startup [clusterSize]
 
 clusterSize=$1
-password=$2
 
 echo "Creating Redis Cluster with $clusterSize nodes"
 
