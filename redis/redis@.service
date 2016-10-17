@@ -35,6 +35,5 @@ ExecStop=/usr/bin/docker stop redis.%i
 
 [X-Fleet]
 # Running on worker machines only
-MachineMetadata=role=data-store
 # Don't schedule on the same machine as other Apache instances
 Conflicts=redis@*.service
