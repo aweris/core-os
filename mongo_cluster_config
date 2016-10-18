@@ -1,0 +1,24 @@
+#!/bin/bash
+#
+# Creates Mongo cluster 
+# Usage: mongo_cluster_config [clusterSize] [replSet]
+
+clusterSize=$1
+replSet=$2
+
+echo "Creating Mongo Config with $clusterSize nodes"
+
+mkdir -p /opt/services
+
+/usr/bin/etcdctl set /services/mongo/replica/size $clusterSize
+/usr/bin/etcdctl set /services/mongo/replica/name $replSet
+
+/usr/bin/wget -N -P /opt/services https://raw.githubusercontent.com/aweris/core-os/master/mongo/mongo@.service
+/usr/bin/wget -N -P /opt/services https://raw.githubusercontent.com/aweris/core-os/master/mongo/mongo_cluster_config.service
+
+/usr/bin/fleetctl start /opt/services/mongo@{1..$clusterSize}.service
+
+if [ $clusterSize -gt 1 ]
+then
+    /usr/bin/fleetctl start /opt/services/mongo_cluster_config.service
+fi

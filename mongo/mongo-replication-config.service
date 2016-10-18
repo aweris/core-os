@@ -1,0 +1,37 @@
+[Unit]
+Description=Mongo DB Replication Configurator
+
+[Service]
+# Let processes take awhile to start up (for first run Docker containers)
+TimeoutStartSec=0
+TimeoutStopSec=360
+
+# Change killmode from "control-group" to "none" to let Docker remove
+# work correctly.
+KillMode=none
+
+# Get CoreOS environmental variables
+EnvironmentFile=/etc/environment
+
+# Pre-start and Start
+## Directives with "=-" are allowed to fail without consequence
+ExecStart=/bin/bash -c 'set -e; \
+
+    while true; do \
+        clusterSize=$(etcdctl get /services/mongo/replica/size 2>/dev/null || true); \
+        numInCluster=$(etcdctl ls /services/mongo/replica/nodes | wc -l;); \
+        if [ $numInCluster = $clusterSize ]; then \
+            ADD_NODES=$(etcdctl ls /services/mongo/replica/nodes | \
+                grep -v "$COREOS_PRIVATE_IPV4" | \
+                xargs -I{}  etcdctl get {} | \
+                xargs -I{} echo "rs.add('{}');"); \
+                
+            /usr/bin/docker run --net=ibe-development -t mongo mongo $COREOS_PRIVATE_IPV4:27017 --eval $ADD_NODES"
+            
+            break;
+        else
+            echo "$numInCluster of $clusterSize machines connected. Waiting..."; \
+        fi; \
+        sleep 30; \
+    done; \
+'

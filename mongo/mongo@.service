@@ -1,0 +1,45 @@
+[Unit]
+Description=Mongo DB service instance %i
+
+# Requirements
+Requires=etcd2.service
+Requires=docker.service
+Requires=weave.service
+Requires=install-weave-network.service
+
+# Dependency ordering
+After=etcd2.service
+After=docker.service
+After=weave.service
+
+[Service]
+# Let processes take awhile to start up (for first run Docker containers)
+TimeoutStartSec=0
+
+# Change killmode from "control-group" to "none" to let Docker remove
+# work correctly.
+KillMode=none
+
+# Get CoreOS environmental variables
+EnvironmentFile=/etc/environment
+
+# Pre-start and Start
+## Directives with "=-" are allowed to fail without consequence
+ExecStartPre=-/usr/bin/docker kill mongo.%i
+ExecStartPre=-/usr/bin/docker rm mongo.%i
+ExecStartPre=/usr/bin/docker pull mongo
+ExecStartPre=/opt/bin/weave run --name mongo.%i --net=ibe-development  -v /data/mongo:/data -p 27017:27017 mongo mongod --smallfiles --replSet ibe-mongo-set
+ExecStart=/usr/bin/docker attach mongo.%i
+ExecStartPost=/usr/bin/etcdctl set /services/mongo/replica/nodes/mongo.%i.weave.local ${COREOS_PRIVATE_IPV4}
+
+# Stop
+ExecStop=/usr/bin/docker stop mongo.%i
+ExecStopPost=-/usr/bin/etcdctl rm /services/mongo/replica/nodes/${COREOS_PRIVATE_IPV4}
+
+Restart=on-failure
+
+[X-Fleet]
+# Running on Data Store machines only
+MachineMetadata=role=data-store
+# Don't schedule on the same machine as other Mongo instances
+Conflicts=mongo@*.service
