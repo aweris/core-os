@@ -32,6 +32,6 @@ ExecStart=/bin/bash -c 'set -e; \
         else
             echo "$numInCluster of $clusterSize machines connected. Waiting..."; \
         fi; \
-        sleep 30; \
+        sleep 30; \
     done; \
 '
