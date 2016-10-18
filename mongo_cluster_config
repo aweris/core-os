@@ -14,11 +14,11 @@ mkdir -p /opt/services
 /usr/bin/etcdctl set /services/mongo/replica/name $replSet
 
 /usr/bin/wget -N -P /opt/services https://raw.githubusercontent.com/aweris/core-os/master/mongo/mongo@.service
-/usr/bin/wget -N -P /opt/services https://raw.githubusercontent.com/aweris/core-os/master/mongo/mongo_cluster_config.service
+/usr/bin/wget -N -P /opt/services https://raw.githubusercontent.com/aweris/core-os/master/mongo/mongo-replication-config.service
 
 /usr/bin/fleetctl start /opt/services/mongo@{1..$clusterSize}.service
 
 if [ $clusterSize -gt 1 ]
 then
-    /usr/bin/fleetctl start /opt/services/mongo_cluster_config.service
+    /usr/bin/fleetctl start /opt/services/mongo-replication-config.service
 fi
