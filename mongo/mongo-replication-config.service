@@ -16,7 +16,6 @@ EnvironmentFile=/etc/environment
 # Pre-start and Start
 ## Directives with "=-" are allowed to fail without consequence
 ExecStart=/bin/bash -c 'set -e; \
-
     while true; do \
         clusterSize=$(etcdctl get /services/mongo/replica/size 2>/dev/null || true); \
         numInCluster=$(etcdctl ls /services/mongo/replica/nodes | wc -l;); \
@@ -25,11 +24,9 @@ ExecStart=/bin/bash -c 'set -e; \
                 grep -v "$COREOS_PRIVATE_IPV4" | \
                 xargs -I{}  etcdctl get {} | \
                 xargs -I{} echo "rs.add('{}');"); \
-                
-            /usr/bin/docker run --net=ibe-development -t mongo mongo $COREOS_PRIVATE_IPV4:27017 --eval $ADD_NODES"
-            
-            break;
-        else
+            /usr/bin/docker run --net=ibe-development -t mongo mongo $COREOS_PRIVATE_IPV4:27017 --eval $ADD_NODES" \
+            break; \
+        else \
             echo "$numInCluster of $clusterSize machines connected. Waiting..."; \
         fi; \
         sleep 30; \
